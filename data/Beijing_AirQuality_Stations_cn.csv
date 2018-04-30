@@ -1,4 +1,4 @@
-监测点ID,经度,纬度
+stationId,longitude,latitude
 dongsi_aq,116.417,39.929
 tiantan_aq,116.407,39.886
 guanyuan_aq,116.339,39.929
