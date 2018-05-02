@@ -100,7 +100,7 @@ ENV/
 # mypy
 .mypy_cache/
 
-# �ٷ��ṩ��ԭʼ����
+# 官方提供的原始数据
 data/beijing_17_18_aq.csv
 data/beijing_17_18_meo.csv
 data/beijing_201802_201803_aq.csv
@@ -115,6 +115,17 @@ data/London_historical_aqi_other_stations_20180331.csv
 data/London_historical_meo_grid.csv
 data/sample_submission.csv
 
-# Pycharm���ɵ���Ŀ�ļ�
+# Pycharm生成的项目文件
 .idea/*
 
+# 其他数据文件
+*.csv
+
+# 人类阅读的文件
+*.pdf
+*.pptx
+*.ppt
+*.docx
+*.doc
+*.xlsx
+*.xls
