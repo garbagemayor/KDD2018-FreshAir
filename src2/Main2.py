@@ -1,5 +1,6 @@
 import datetime
 import requests
+import shutil
 
 class PlanB:
     url_template = 'https://biendata.com/competition/%s/%s/2018-%02d-%02d-00/2018-%02d-%02d-23/2k0d1d8'
@@ -14,6 +15,8 @@ class PlanB:
     url = None
     file_name = None
     submission_name = None
+    stationList = None
+    file_data = None
 
     def __init__(self, base, city, month, day):
         self.base = base
@@ -29,6 +32,20 @@ class PlanB:
         print("正在从网络获取天气数据：%s" % (self.file_name))
         with open(self.file_name, 'w') as f:
             f.write(requests.get(self.url).text)
+
+    def getStationList(self):
+        if self.city == 'bj':
+            st_file_name = '../data/Beijing_AirQuality_Stations_cn.csv'
+        else:
+            st_file_name = '../data/London_AirQuality_Stations.csv'
+        self.stationList = []
+        for line in open(st_file_name):
+            elem = line.split(',')
+            if elem[0] == 'stationId' or elem[0] == '':
+                continue
+            if self.city == 'ld' and elem[2] != 'TRUE':
+                continue
+            self.stationList.append(elem[0])
 
     def translateToSubmission(self):
         print("正在转换格式")
@@ -114,10 +131,12 @@ class PlanB:
         print("正在输出到文件：%s" % (self.submission_name))
         if self.city == 'bj':
             fout = open(self.submission_name, 'w')
+            fout.write("test_id,PM2.5,PM10,O3\n")
         else:
             fout = open(self.submission_name, "a")
-        fout.write("test_id,PM2.5,PM10,O3\n")
         for station in self.file_data:
+            if station not in self.stationList:
+                continue;
             for hour in range(48):
                 tmp = self.file_data[station][hour]
                 if self.city == 'bj':
@@ -126,13 +145,16 @@ class PlanB:
                     fout.write("%s#%d,%f,%f,\n" % (station, hour, tmp[0], tmp[1]))
         fout.close()
 
+    def run(self):
+        self.getDataFromUrl()
+        self.getStationList()
+        self.translateToSubmission()
+        self.writeSubmission()
+        shutil.copy(self.submission_name, '../data/2/submission.csv')
+
 if __name__ == '__main__':
     rt = datetime.datetime.utcnow() - datetime.timedelta(days=1)
     pb_bj = PlanB('aq', 'bj', rt.month, rt.day)
-    pb_bj.getDataFromUrl()
-    pb_bj.translateToSubmission()
-    pb_bj.writeSubmission()
+    pb_bj.run()
     pb_ld = PlanB('aq', 'ld', rt.month, rt.day)
-    pb_ld.getDataFromUrl()
-    pb_ld.translateToSubmission()
-    pb_ld.writeSubmission()
+    pb_ld.run()
