@@ -79,7 +79,7 @@ class PlanB:
                     for h in range(st_hour, en_hour):
                         tmp = (st_data * (en_hour - h) + en_data * (h - st_hour + 1)) / (en_hour - st_hour + 1)
                         file_data[station][h][i] = tmp
-            # 然后补充边缘缺损数据和彻底缺损的数据
+            # 然后补充边缘缺损数据
             for h in range(48):
                 for i in range(3):
                     if file_data[station][h][i] == None:
@@ -87,7 +87,26 @@ class PlanB:
                             file_data[station][h][i] = file_data[station][h + 24][i]
                         else:
                             file_data[station][h][i] = file_data[station][h - 24][i]
+        # 最后解决彻底缺损的数据
+        for station in file_data:
+            for h in range(48):
+                for i in range(3):
                     if file_data[station][h][i] == None:
+                        flag = False
+                        for st in file_data:
+                            if file_data[st][h][i] != None:
+                                file_data[station][h][i] = file_data[st][h][i]
+                                flag = True
+                                break
+                        if flag == True:
+                            continue
+                        for hh in range(h - 1, -1, -1):
+                            if file_data[station][hh][i] != None:
+                                file_data[station][h][i] = file_data[station][hh][i]
+                                flag = True
+                                break
+                        if flag == True:
+                            continue
                         file_data[station][h][i] = 0
         self.file_data = file_data
 
