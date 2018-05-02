@@ -4,7 +4,7 @@ files = {
 }
 data = {
     "user_id": "nodgd",
-    "team_token": "53dfdfsdfdsfioiuoiuoiu7231asdfa7sdfdfsdf23cdf716e5072",
+    "team_token": "4dbe68b547d0295813644d576a5248ee9b52377514436fe25271c5904668674e",
     "description": "5.2: use yesterday's data",
     "filename": "st_aq_05-01_submission.csv",
 }
