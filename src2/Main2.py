@@ -4,7 +4,7 @@ import requests
 class PlanB:
     url_template = 'https://biendata.com/competition/%s/%s/2018-%02d-%02d-00/2018-%02d-%02d-23/2k0d1d8'
     file_name_template = '../data/2/%s_st_%s_%02d-%02d_request.csv'
-    submission_name_template = '../data/2/%s_st_%s_%02d-%02d_submission.csv'
+    submission_name_template = '../data/2/st_%s_%02d-%02d_submission.csv'
 
     base = None
     city = None
@@ -23,7 +23,7 @@ class PlanB:
         self.full_base = 'airquality' if base == 'aq' else 'meteorology'
         self.url = self.url_template % (self.full_base, city, month, day, month, day)
         self.file_name = self.file_name_template % (city, base, month, day)
-        self.submission_name = self.submission_name_template % (city, base, month, day)
+        self.submission_name = self.submission_name_template % (base, month, day)
 
     def getDataFromUrl(self):
         print("正在从网络获取天气数据：%s" % (self.file_name))
@@ -112,17 +112,27 @@ class PlanB:
 
     def writeSubmission(self):
         print("正在输出到文件：%s" % (self.submission_name))
-        fout = open(self.submission_name, 'w')
+        if self.city == 'bj':
+            fout = open(self.submission_name, 'w')
+        else:
+            fout = open(self.submission_name, "a")
         fout.write("test_id,PM2.5,PM10,O3\n")
         for station in self.file_data:
             for hour in range(48):
                 tmp = self.file_data[station][hour]
-                fout.write("%s#%d,%f,%f,%f\n" % (station, hour, tmp[0], tmp[1], tmp[2]))
+                if self.city == 'bj':
+                    fout.write("%s#%d,%f,%f,%f\n" % (station, hour, tmp[0], tmp[1], tmp[2]))
+                else:
+                    fout.write("%s#%d,%f,%f,\n" % (station, hour, tmp[0], tmp[1]))
         fout.close()
 
 if __name__ == '__main__':
     rt = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-    pb = PlanB('aq', 'bj', rt.month, rt.day)
-    pb.getDataFromUrl()
-    pb.translateToSubmission()
-    pb.writeSubmission()
+    pb_bj = PlanB('aq', 'bj', rt.month, rt.day)
+    pb_bj.getDataFromUrl()
+    pb_bj.translateToSubmission()
+    pb_bj.writeSubmission()
+    pb_ld = PlanB('aq', 'ld', rt.month, rt.day)
+    pb_ld.getDataFromUrl()
+    pb_ld.translateToSubmission()
+    pb_ld.writeSubmission()
