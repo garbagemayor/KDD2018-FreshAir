@@ -64,7 +64,8 @@ class PlanB:
                     return None
             def toFloat(xStr):
                 try:
-                    return float(xStr)
+                    x = float(xStr)
+                    return x if x >= 0 else 0
                 except Exception:
                     return None
             tmp_aq = [
